@@ -25,7 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stringOp.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -176,12 +176,14 @@ void UartTask_func(void const *argument)
         cntr++;
       }
     }
+    /*
     if (echo)
     {
       uint8_t newLine = 10;
       HAL_UART_Transmit(&huart1, &newLine, 1, 100);
       echo = 0;
     }
+    */
     if (rcvd_complete)
     {
       uint8_t length = end - start;
@@ -190,7 +192,9 @@ void UartTask_func(void const *argument)
       {
         tmpData[i] = buffer[start + i];
       }
-      HAL_UART_Transmit(&huart1, tmpData, sizeof(tmpData), 100);
+      //HAL_UART_Transmit(&huart1, tmpData, sizeof(tmpData), 100);
+      //echoFunc(&tmpData);
+      strOp(&tmpData);
       echo = 1;
       rcvd_complete = 0;
     }
