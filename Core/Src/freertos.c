@@ -26,6 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stringOp.h"
+#include "std_types.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,7 +55,12 @@ extern uint8_t rcvd_complete;
 extern uint8_t start;
 extern uint8_t end;
 extern UART_HandleTypeDef huart1;
-
+operationType current_operation = OP_INVALID;
+uint16_t ledOnTime = 500;
+uint16_t ledOffTime = 500;
+uint16_t baud = 115200;
+uint8_t ledEvent = 0;
+uint8_t uartEvent = 0;
 /* USER CODE END Variables */
 osThreadId LedTaskHandle;
 osThreadId UartTaskHandle;
