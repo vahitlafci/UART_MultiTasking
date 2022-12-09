@@ -53,7 +53,6 @@ extern uint8_t cntr;
 extern uint8_t rcvd_complete;
 extern uint8_t start;
 extern uint8_t end;
-extern uint8_t echo;
 extern UART_HandleTypeDef huart1;
 
 /* USER CODE END Variables */
@@ -193,9 +192,8 @@ void UartTask_func(void const *argument)
         tmpData[i] = buffer[start + i];
       }
       //HAL_UART_Transmit(&huart1, tmpData, sizeof(tmpData), 100);
-      //echoFunc(&tmpData);
+      echoFunc(&tmpData);
       strOp(&tmpData);
-      echo = 1;
       rcvd_complete = 0;
     }
     // HAL_UART_Transmit(&huart1,msg,sizeof(msg),100);
