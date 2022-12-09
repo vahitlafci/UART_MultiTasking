@@ -47,6 +47,7 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
 #define BUFFER_LENGTH 50
+/*extern variables*/
 extern uint8_t uartItFlag;
 extern uint8_t buffer[BUFFER_LENGTH];
 extern uint8_t rcvd_data;
@@ -55,12 +56,16 @@ extern uint8_t rcvd_complete;
 extern uint8_t start;
 extern uint8_t end;
 extern UART_HandleTypeDef huart1;
+/*shared variables*/
 operationType current_operation = OP_INVALID;
 uint16_t ledOnTime = 500;
 uint16_t ledOffTime = 500;
 uint16_t baud = 115200;
 uint8_t ledEvent = 0;
 uint8_t uartEvent = 0;
+/*static variables that will be used only in this C file*/
+static ledOperationsStateType led_state = STATE_LED_ON_INITIAL;
+static ledCounter;
 /* USER CODE END Variables */
 osThreadId LedTaskHandle;
 osThreadId UartTaskHandle;
@@ -145,6 +150,31 @@ void LedTask_func(void const *argument)
   /* Infinite loop */
   for (;;)
   {
+    switch (led_state)
+    {
+    case STATE_LED_ON_INITIAL:
+      ledCounter = ledOnTime;
+      led_state = STATE_LED_ON_ONGOING;
+      break;
+    case STATE_LED_ON_ONGOING:
+      ledCounter--;
+      HAL_GPIO_WritePin(GPIOG, GPIO_PIN_14, GPIO_PIN_SET);
+      if(ledCounter == 0) {
+        led_state = STATE_LED_OFF_INITIAL;
+      }
+      break;
+    case STATE_LED_OFF_INITIAL:
+      ledCounter = ledOffTime;
+      led_state = STATE_LED_OFF_ONGOING;
+      break;
+    case STATE_LED_OFF_ONGOING:
+      ledCounter--;
+      HAL_GPIO_WritePin(GPIOG, GPIO_PIN_14, GPIO_PIN_RESET);
+      if(ledCounter == 0) {
+        led_state = STATE_LED_ON_INITIAL;
+      }
+      break;
+    }
     osDelay(1);
   }
   /* USER CODE END LedTask_func */
@@ -181,14 +211,6 @@ void UartTask_func(void const *argument)
         cntr++;
       }
     }
-    /*
-    if (echo)
-    {
-      uint8_t newLine = 10;
-      HAL_UART_Transmit(&huart1, &newLine, 1, 100);
-      echo = 0;
-    }
-    */
     if (rcvd_complete)
     {
       uint8_t length = end - start;
@@ -197,12 +219,12 @@ void UartTask_func(void const *argument)
       {
         tmpData[i] = buffer[start + i];
       }
-      //HAL_UART_Transmit(&huart1, tmpData, sizeof(tmpData), 100);
-      echoFunc(&tmpData);
+      // HAL_UART_Transmit(&huart1, tmpData, sizeof(tmpData), 100);
+      if (current_operation != OP_STOP) // TODO(VahitL) : This means, echo will proceed if the last received command was not stop. This will block echo function. A new task need to be added in the future for this operation.
+        echoFunc(&tmpData);
       strOp(&tmpData);
       rcvd_complete = 0;
     }
-    // HAL_UART_Transmit(&huart1,msg,sizeof(msg),100);
     osDelay(20);
   }
   /* USER CODE END UartTask_func */

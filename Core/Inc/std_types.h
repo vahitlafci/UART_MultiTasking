@@ -9,4 +9,14 @@ typedef enum {
     OP_BAUD = 5,
     OP_WORLD_LENGTH = 6
 } operationType;
+
+
+
+typedef enum {
+    STATE_INVALID = 0xFF,
+    STATE_LED_ON_ONGOING = 1,
+    STATE_LED_ON_INITIAL = 2,
+    STATE_LED_OFF_ONGOING = 3,
+    STATE_LED_OFF_INITIAL = 4
+} ledOperationsStateType;
 #endif
