@@ -1,14 +1,15 @@
 #include "stringOp.h"
 #include "std_types.h"
-
-static uint8_t result = 0xFF;
-static uint8_t val = 0;
+/*shared variables*/
 extern operationType current_operation;
 extern uint16_t ledOnTime;
 extern uint16_t ledOffTime;
 extern uint16_t baud;
 extern uint8_t ledEvent;
 extern uint8_t uartEvent;
+/*static variables*/
+static uint16_t ledOnTime_previous;
+static uint16_t ledOffTime_previous;
 void echoFunc(uint8_t *data)
 {
     printf("%s\n", data);
@@ -26,7 +27,6 @@ void strOp(uint8_t *input)
         array[i++] = p;
         p = strtok(NULL, "/");
     }
-    val = 0;
 
     if (strstr(array[0], "ledon"))
     {
@@ -44,11 +44,17 @@ void strOp(uint8_t *input)
     {
         current_operation = OP_START;
         ledEvent = 1;
+        ledOnTime = ledOnTime_previous;
+        ledOffTime = ledOffTime_previous;
     }
     else if (strstr(array[0], "stop"))
     {
         current_operation = OP_STOP;
         ledEvent = 1;
+        ledOffTime_previous = ledOffTime;
+        ledOnTime_previous = ledOnTime;
+        ledOnTime = 1000;
+        ledOffTime = 1000; 
     }
     else if (strstr(array[0], "baud"))
     {
@@ -62,7 +68,7 @@ void strOp(uint8_t *input)
     }
     else
     {
-        result = 0xFF;
+        //TODO(VahitL)
     }
     return;
 }

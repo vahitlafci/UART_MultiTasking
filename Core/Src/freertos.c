@@ -150,18 +150,15 @@ void LedTask_func(void const *argument)
   /* Infinite loop */
   for (;;)
   {
+    if(ledEvent==1) {
+      ledEvent = 0;
+      led_state = STATE_LED_ON_INITIAL;
+    }
     switch (led_state)
     {
     case STATE_LED_ON_INITIAL:
       ledCounter = ledOnTime;
       led_state = STATE_LED_ON_ONGOING;
-      break;
-    case STATE_LED_ON_ONGOING:
-      ledCounter--;
-      HAL_GPIO_WritePin(GPIOG, GPIO_PIN_14, GPIO_PIN_SET);
-      if(ledCounter == 0) {
-        led_state = STATE_LED_OFF_INITIAL;
-      }
       break;
     case STATE_LED_OFF_INITIAL:
       ledCounter = ledOffTime;
@@ -172,6 +169,13 @@ void LedTask_func(void const *argument)
       HAL_GPIO_WritePin(GPIOG, GPIO_PIN_14, GPIO_PIN_RESET);
       if(ledCounter == 0) {
         led_state = STATE_LED_ON_INITIAL;
+      }
+      break;
+    case STATE_LED_ON_ONGOING:
+      ledCounter--;
+      HAL_GPIO_WritePin(GPIOG, GPIO_PIN_14, GPIO_PIN_SET);
+      if(ledCounter == 0) {
+        led_state = STATE_LED_OFF_INITIAL;
       }
       break;
     }
