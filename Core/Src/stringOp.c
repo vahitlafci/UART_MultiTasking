@@ -4,7 +4,7 @@
 extern operationType current_operation;
 extern uint16_t ledOnTime;
 extern uint16_t ledOffTime;
-extern uint16_t baud;
+extern uint32_t baud;
 extern uint8_t ledEvent;
 extern uint8_t uartEvent;
 /*static variables*/

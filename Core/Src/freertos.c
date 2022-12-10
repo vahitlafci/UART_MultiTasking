@@ -60,7 +60,7 @@ extern UART_HandleTypeDef huart1;
 operationType current_operation = OP_INVALID;
 uint16_t ledOnTime = 500;
 uint16_t ledOffTime = 500;
-uint16_t baud = 115200;
+uint32_t baud = 115200;
 uint8_t ledEvent = 0;
 uint8_t uartEvent = 0;
 /*static variables*/
@@ -229,8 +229,14 @@ void UartTask_func(void const *argument)
       rcvd_complete = 0;
       if (current_operation != OP_STOP) // TODO(VahitL) : This means, echo will proceed if the last received command was not stop. This will block echo function. A new task need to be added in the future for this operation.
         echoFunc(&echoData);
+      if(current_operation == OP_BAUD){
+    	 HAL_UART_Abort_IT(&huart1);
+    	 HAL_UART_DeInit(&huart1);
+    	 MX_USART1_UART_Init();
+      }
     }
-    osDelay(20);
+    printf("test\n");
+    osDelay(1000);
   }
   /* USER CODE END UartTask_func */
 }
