@@ -10,11 +10,6 @@ extern uint8_t uartEvent;
 /*static variables*/
 static uint16_t ledOnTime_previous;
 static uint16_t ledOffTime_previous;
-void echoFunc(uint8_t *data)
-{
-    printf("%s\n", data);
-    return;
-}
 
 void strOp(uint8_t *input)
 {
@@ -68,7 +63,7 @@ void strOp(uint8_t *input)
     }
     else
     {
-        //TODO(VahitL)
+        current_operation = OP_INVALID;
     }
     return;
 }

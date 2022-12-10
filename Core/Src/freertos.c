@@ -209,12 +209,12 @@ void UartTask_func(void const *argument)
           rcvd_complete = 1;
           end = cntr;
           cntr++;
-
           break;
         }
         cntr++;
       }
     }
+
     if (rcvd_complete)
     {
       uint8_t length = end - start;
@@ -225,15 +225,27 @@ void UartTask_func(void const *argument)
         tmpData[i] = buffer[start + i];
         echoData[length] = buffer[start + i];
       }
-      strOp(&tmpData);
       rcvd_complete = 0;
-      if (current_operation != OP_STOP) // TODO(VahitL) : This means, echo will proceed if the last received command was not stop. This will block echo function. A new task need to be added in the future for this operation.
+
+      strOp(&tmpData);
+      
+      switch (current_operation)
+      {
+      case OP_STOP:
+        //
+        break;
+      case OP_INVALID:
+        printf("E_N_OK\n");
+        break;
+      case OP_BAUD:
         echoFunc(&echoData);
-      if(current_operation == OP_BAUD){
-    	 HAL_UART_Abort_IT(&huart1);
-    	 HAL_UART_DeInit(&huart1);
-    	 MX_USART1_UART_Init();
-    	 HAL_UART_Receive_IT(&huart1, buffer, BUFFER_LENGTH);
+        HAL_UART_Abort_IT(&huart1);
+        HAL_UART_DeInit(&huart1);
+        MX_USART1_UART_Init();
+        HAL_UART_Receive_IT(&huart1, buffer, BUFFER_LENGTH);
+      default:
+        echoFunc(&echoData);
+        break;
       }
     }
     osDelay(20);
