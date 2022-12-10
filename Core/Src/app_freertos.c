@@ -69,8 +69,6 @@ static uint32_t ledCounter;
 static uint8_t taskStopped = 1;
 static uint8_t echoData[100];
 static uint8_t echoLength = 0;
-static uint8_t debugIT = 0;
-static uint8_t debugPrint = 0;
 static uint8_t echoFlag = 0;
 static uint8_t echoData[100];
 /* USER CODE END Variables */
@@ -197,14 +195,6 @@ void UartTask_Func(void const * argument)
 	/* Infinite loop */
 	for (;;)
 	{
-		if(debugIT) {
-			debugIT = 0;
-			HAL_UART_Receive_IT(&hlpuart1, buffer, BUFFER_LENGTH);
-		}
-		if(debugPrint) {
-			debugPrint = 0;
-			printf("test\n");
-		}
 		if (uartItFlag)
 		{
 			uartItFlag = 0;
