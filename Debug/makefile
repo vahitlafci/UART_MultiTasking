@@ -13,7 +13,7 @@ RM := rm -rf
 -include Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/subdir.mk
 -include Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/subdir.mk
 -include Middlewares/Third_Party/FreeRTOS/Source/subdir.mk
--include Drivers/STM32F4xx_HAL_Driver/Src/subdir.mk
+-include Drivers/STM32G4xx_HAL_Driver/Src/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
 -include objects.mk
@@ -38,34 +38,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := Uart_MultiTasking
+BUILD_ARTIFACT_NAME := G47_Uart
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-Uart_MultiTasking.elf \
+G47_Uart.elf \
 
 MAP_FILES += \
-Uart_MultiTasking.map \
+G47_Uart.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-Uart_MultiTasking.list \
+G47_Uart.list \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: Uart_MultiTasking.elf secondary-outputs
+main-build: G47_Uart.elf secondary-outputs
 
 # Tool invocations
-Uart_MultiTasking.elf Uart_MultiTasking.map: $(OBJS) $(USER_OBJS) C:\Users\vcan_\STM32CubeIDE\workspace_1.11.0\Uart_MultiTasking\STM32F429ZITX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Uart_MultiTasking.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\vcan_\STM32CubeIDE\workspace_1.11.0\Uart_MultiTasking\STM32F429ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Uart_MultiTasking.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+G47_Uart.elf G47_Uart.map: $(OBJS) $(USER_OBJS) C:\Users\vcan_\STM32CubeIDE\workspace_1.11.0\G47_Uart\STM32G474RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "G47_Uart.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\vcan_\STM32CubeIDE\workspace_1.11.0\G47_Uart\STM32G474RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="G47_Uart.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -74,14 +74,14 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-Uart_MultiTasking.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "Uart_MultiTasking.list"
+G47_Uart.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "G47_Uart.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) Uart_MultiTasking.elf Uart_MultiTasking.list Uart_MultiTasking.map default.size.stdout
+	-$(RM) G47_Uart.elf G47_Uart.list G47_Uart.map default.size.stdout
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
