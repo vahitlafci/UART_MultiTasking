@@ -264,7 +264,7 @@ void UartTask_Func(void const * argument)
 				break;
 			}
 		}
-		osDelay(20);
+		osDelay(1);
 	}
   /* USER CODE END UartTask_Func */
 }

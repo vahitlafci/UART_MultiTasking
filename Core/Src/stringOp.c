@@ -10,6 +10,7 @@ extern uint8_t uartEvent;
 /*static variables*/
 static uint16_t ledOnTime_previous;
 static uint16_t ledOffTime_previous;
+static operationType previous_operation;
 void echoFunc(uint8_t *data)
 {
     printf("%s\n", data);
@@ -18,6 +19,7 @@ void echoFunc(uint8_t *data)
 
 void strOp(uint8_t *input)
 {
+    previous_operation = current_operation;
     int i = 0;
     char *p = strtok(input, "=");
     char *array[2];
@@ -30,15 +32,21 @@ void strOp(uint8_t *input)
 
     if (strstr(array[0], "ledon"))
     {
-        current_operation = OP_LED_ON;
-        ledEvent = 1;
-        ledOnTime = atoi(array[1]);
+        if (previous_operation != OP_STOP)
+        {
+            current_operation = OP_LED_ON;
+            ledEvent = 1;
+            ledOnTime = atoi(array[1]);
+        }
     }
     else if (strstr(array[0], "ledoff"))
     {
-        current_operation = OP_LED_OFF;
-        ledEvent = 1;
-        ledOffTime = atoi(array[1]);
+        if (previous_operation != OP_STOP)
+        {
+            current_operation = OP_LED_OFF;
+            ledEvent = 1;
+            ledOffTime = atoi(array[1]);
+        }
     }
     else if (strstr(array[0], "start"))
     {
@@ -54,7 +62,7 @@ void strOp(uint8_t *input)
         ledOffTime_previous = ledOffTime;
         ledOnTime_previous = ledOnTime;
         ledOnTime = 1000;
-        ledOffTime = 1000; 
+        ledOffTime = 1000;
     }
     else if (strstr(array[0], "baud"))
     {
@@ -64,7 +72,7 @@ void strOp(uint8_t *input)
     }
     else if (strstr(array[0], "wordlength"))
     {
-        current_operation = OP_WORLD_LENGTH;///  TODO(VahitL)
+        current_operation = OP_WORLD_LENGTH; ///  TODO(VahitL)
     }
     else
     {
