@@ -240,18 +240,21 @@ void UartTask_Func(void const * argument)
 			switch (current_operation)
 			{
 			case OP_STOP:
-		        vTaskSuspend(echoTaskHandle);
-		        taskStopped = 1;
+				if (!taskStopped)
+				{
+					vTaskSuspend(echoTaskHandle);
+					taskStopped = 1;
+				}
 				break;
 			case OP_INVALID:
 				printf("E_N_OK\n");
 				break;
 			case OP_START:
-		        if (taskStopped)
-		        {
-		          vTaskResume(echoTaskHandle);
-		          taskStopped = 0;
-		        }
+				if (taskStopped)
+				{
+					vTaskResume(echoTaskHandle);
+					taskStopped = 0;
+				}
 				echoFlag = 1;
 			case OP_BAUD:
 				echoFlag = 1;
