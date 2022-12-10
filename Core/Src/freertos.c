@@ -233,10 +233,10 @@ void UartTask_func(void const *argument)
     	 HAL_UART_Abort_IT(&huart1);
     	 HAL_UART_DeInit(&huart1);
     	 MX_USART1_UART_Init();
+    	 HAL_UART_Receive_IT(&huart1, buffer, BUFFER_LENGTH);
       }
     }
-    printf("test\n");
-    osDelay(1000);
+    osDelay(20);
   }
   /* USER CODE END UartTask_func */
 }
