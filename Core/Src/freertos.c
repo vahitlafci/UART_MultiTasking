@@ -63,7 +63,7 @@ uint16_t ledOffTime = 500;
 uint16_t baud = 115200;
 uint8_t ledEvent = 0;
 uint8_t uartEvent = 0;
-/*static variables that will be used only in this C file*/
+/*static variables*/
 static ledOperationsStateType led_state = STATE_LED_ON_INITIAL;
 static ledCounter;
 /* USER CODE END Variables */
@@ -219,15 +219,16 @@ void UartTask_func(void const *argument)
     {
       uint8_t length = end - start;
       uint8_t tmpData[length];
+      uint8_t echoData[length];
       for (int i = 0; i < length; i++)
       {
         tmpData[i] = buffer[start + i];
+        echoData[length] = buffer[start + i];
       }
-      // HAL_UART_Transmit(&huart1, tmpData, sizeof(tmpData), 100);
-      if (current_operation != OP_STOP) // TODO(VahitL) : This means, echo will proceed if the last received command was not stop. This will block echo function. A new task need to be added in the future for this operation.
-        echoFunc(&tmpData);
       strOp(&tmpData);
       rcvd_complete = 0;
+      if (current_operation != OP_STOP) // TODO(VahitL) : This means, echo will proceed if the last received command was not stop. This will block echo function. A new task need to be added in the future for this operation.
+        echoFunc(&echoData);
     }
     osDelay(20);
   }
