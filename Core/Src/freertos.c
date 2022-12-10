@@ -65,10 +65,14 @@ uint8_t ledEvent = 0;
 uint8_t uartEvent = 0;
 /*static variables*/
 static ledOperationsStateType led_state = STATE_LED_ON_INITIAL;
-static ledCounter;
+static uint32_t ledCounter;
+static uint8_t taskStopped = 1;
+static uint8_t echoData[100];
+static uint8_t echoLength = 0;
 /* USER CODE END Variables */
 osThreadId LedTaskHandle;
 osThreadId UartTaskHandle;
+osThreadId echoTaskHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -77,6 +81,7 @@ osThreadId UartTaskHandle;
 
 void LedTask_func(void const *argument);
 void UartTask_func(void const *argument);
+void echoTask_func(void const *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -129,8 +134,12 @@ void MX_FREERTOS_Init(void)
   LedTaskHandle = osThreadCreate(osThread(LedTask), NULL);
 
   /* definition and creation of UartTask */
-  osThreadDef(UartTask, UartTask_func, osPriorityLow, 0, 1024);
+  osThreadDef(UartTask, UartTask_func, osPriorityLow, 0, 1500);
   UartTaskHandle = osThreadCreate(osThread(UartTask), NULL);
+
+  /* definition and creation of echoTask */
+  osThreadDef(echoTask, echoTask_func, osPriorityIdle, 0, 256);
+  echoTaskHandle = osThreadCreate(osThread(echoTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -150,7 +159,8 @@ void LedTask_func(void const *argument)
   /* Infinite loop */
   for (;;)
   {
-    if(ledEvent==1) {
+    if (ledEvent == 1)
+    {
       ledEvent = 0;
       led_state = STATE_LED_ON_INITIAL;
     }
@@ -167,14 +177,16 @@ void LedTask_func(void const *argument)
     case STATE_LED_OFF_ONGOING:
       ledCounter--;
       HAL_GPIO_WritePin(GPIOG, GPIO_PIN_14, GPIO_PIN_RESET);
-      if(ledCounter == 0) {
+      if (ledCounter == 0)
+      {
         led_state = STATE_LED_ON_INITIAL;
       }
       break;
     case STATE_LED_ON_ONGOING:
       ledCounter--;
       HAL_GPIO_WritePin(GPIOG, GPIO_PIN_14, GPIO_PIN_SET);
-      if(ledCounter == 0) {
+      if (ledCounter == 0)
+      {
         led_state = STATE_LED_OFF_INITIAL;
       }
       break;
@@ -219,38 +231,66 @@ void UartTask_func(void const *argument)
     {
       uint8_t length = end - start;
       uint8_t tmpData[length];
-      uint8_t echoData[length];
       for (int i = 0; i < length; i++)
       {
         tmpData[i] = buffer[start + i];
         echoData[length] = buffer[start + i];
       }
+      echoLength = length;
       rcvd_complete = 0;
 
       strOp(&tmpData);
-      
+
       switch (current_operation)
       {
       case OP_STOP:
-        //
+        vTaskSuspend(echoTaskHandle);
+        taskStopped = 1;
         break;
       case OP_INVALID:
         printf("E_N_OK\n");
         break;
       case OP_BAUD:
-        echoFunc(&echoData);
+        if (taskStopped)
+        {
+          vTaskResume(echoTaskHandle);
+          taskStopped = 0;
+        }
         HAL_UART_Abort_IT(&huart1);
         HAL_UART_DeInit(&huart1);
         MX_USART1_UART_Init();
         HAL_UART_Receive_IT(&huart1, buffer, BUFFER_LENGTH);
       default:
-        echoFunc(&echoData);
+        if (taskStopped)
+        {
+          vTaskResume(echoTaskHandle);
+          taskStopped = 0;
+        }
         break;
       }
     }
-    osDelay(20);
+    osDelay(1);
   }
   /* USER CODE END UartTask_func */
+}
+
+/* USER CODE BEGIN Header_echoTask_func */
+/**
+ * @brief Function implementing the echoTask thread.
+ * @param argument: Not used
+ * @retval None
+ */
+/* USER CODE END Header_echoTask_func */
+void echoTask_func(void const *argument)
+{
+  /* USER CODE BEGIN echoTask_func */
+  /* Infinite loop */
+  for (;;)
+  {
+	HAL_UART_Transmit(&huart1, &echoData, echoLength, 0xFFFF);
+    osDelay(20);
+  }
+  /* USER CODE END echoTask_func */
 }
 
 /* Private application code --------------------------------------------------*/
