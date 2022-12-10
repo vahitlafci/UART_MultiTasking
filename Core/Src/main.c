@@ -36,7 +36,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define BUFFER_LENGTH 50
+#define BUFFER_LENGTH 512
 #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
 
 /* USER CODE END PD */
