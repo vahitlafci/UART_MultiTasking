@@ -234,7 +234,7 @@ void UartTask_func(void const *argument)
       for (int i = 0; i < length; i++)
       {
         tmpData[i] = buffer[start + i];
-        echoData[length] = buffer[start + i];
+        echoData[i] = buffer[start + i];
       }
       echoLength = length;
       rcvd_complete = 0;
