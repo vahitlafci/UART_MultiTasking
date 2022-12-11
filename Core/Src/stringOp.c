@@ -72,7 +72,7 @@ void strOp(uint8_t *input)
     }
     else if (strstr(array[0], "wordlength"))
     {
-        current_operation = OP_WORLD_LENGTH; ///  TODO(VahitL)
+        current_operation = OP_INVALID; //  TODO(VahitL)
     }
     else
     {
