@@ -1,0 +1,10 @@
+Non-Capital letters shall be used. 
+A terminal with \n character shall be used.
+Only one command at a time shall be used.
+Supported commands:
+    ledon=xxx - led on time configuration
+    ledoff=xxx - led off time configuration
+    baud=xxxx - baudrate configuration between 4800 and 460800
+    stop - stopping echo
+    start - re-starting echo 
+     
